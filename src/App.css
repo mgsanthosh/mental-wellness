@@ -1,0 +1,59 @@
+.hero-container {
+  text-align: center;
+  position: relative;
+}
+.hero-content-container {
+  position: absolute;
+  top: 20%;
+  left: 30%;
+  font-size: 30px;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+.homeButton {
+  width: 200px;
+  height: 56px;
+  background-color: chocolate;
+  border-radius: 10px;
+  color: #fff;
+  font-weight: 700;
+  letter-spacing: 0.9px;
+  font-size: 18px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.login-main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.login-form-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 500px;
+  background-color: antiquewhite;
+  padding: 20px;
+  gap: 20px;
+}
+
+.login-image {
+  width: 500px;
+  height: 500px;
+}
+
+.dashboard-main-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
