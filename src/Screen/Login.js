@@ -3,6 +3,7 @@ import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 import { Button, TextField } from "@mui/material";
+import backgroundImage from "../bg.jpeg";
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
@@ -21,12 +22,14 @@ const Login = (props) => {
       });
   };
   return (
-    <div className="login-main-container">
-      <div>
-        <img className="login-image" src="/hero.jpeg"></img>
-      </div>
-      <form>
-        <div className="login-form-container">
+    <div
+      className="login-main-container"
+      style={{ backgroundImage: `url(${backgroundImage})` }}
+    >
+      <div className="login-form-container">
+        <div className="login-form-heading">Login to Continue</div>
+
+        <div style={{ display: "flex", gap: "20px" }}>
           <TextField
             type="email"
             value={email}
@@ -41,11 +44,16 @@ const Login = (props) => {
             placeholder="Enter Password"
             label="Password"
           />
-          <div className="homeButton" type="submit" onClick={handleSubmit}>
-            Login
-          </div>
         </div>
-      </form>
+
+        <div className="homeButton" type="submit" onClick={handleSubmit}>
+          Login
+        </div>
+        <div>or</div>
+        <div className="auth-page-switcher" onClick={() => navigate("/signup")}>
+          New User? Sign Up
+        </div>
+      </div>
     </div>
   );
 };

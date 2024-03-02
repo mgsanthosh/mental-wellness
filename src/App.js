@@ -7,13 +7,18 @@ import Login from "./Screen/Login";
 import Questions from "./Screen/Questions";
 import Chat from "./Screen/Chat";
 import ChatFile from "./Screen/ChatFile";
+import SignUp from "./Screen/SignUp";
 
 function App() {
   return (
     <div className="App">
+      <div className="header">
+        <div className="logoDesign"></div>Gastrointestinal Wellness Center
+      </div>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/questions" element={<Questions />} />
         <Route
