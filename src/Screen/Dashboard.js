@@ -156,8 +156,15 @@ const Dashboard = (props) => {
               Want to chat with our Experts?
             </div>
             <div style={{ marginBottom: "20px" }}>Online Experts</div>
-            <div style={{ display: "flex", gap: "20px" }}>
-              <Card sx={{ maxWidth: 200 }}>
+            <div
+              style={{
+                display: "flex",
+                gap: "20px",
+                flexWrap: "wrap",
+                justifyContent: "center",
+              }}
+            >
+              <Card sx={{ maxWidth: 200, borderRadius: 2 }}>
                 <CardMedia
                   sx={{ height: 100 }}
                   image="/counselor.jpeg"
