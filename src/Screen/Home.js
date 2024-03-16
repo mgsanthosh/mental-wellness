@@ -18,13 +18,23 @@ const Home = (props) => {
             <div className="hero-subtitle">
               Nurturing Mental Wellness with Gastrointestinal Health
             </div>
-            <div
-              onClick={() => {
-                navigate("/login");
-              }}
-              className="homeButton"
-            >
-              Get Started
+            <div style={{ display: "flex", gap: "20px" }}>
+              <div
+                onClick={() => {
+                  navigate("/login");
+                }}
+                className="homeButton"
+              >
+                Get Started
+              </div>
+              <div
+                onClick={() => {
+                  navigate("/expert-login");
+                }}
+                className="homeButtonOutline"
+              >
+                Counsellor Login
+              </div>
             </div>
           </div>
         </div>

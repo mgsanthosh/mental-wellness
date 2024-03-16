@@ -1,23 +1,67 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 import { Button, TextField } from "@mui/material";
 import backgroundImage from "../bg.jpeg";
+import { ToastContainer, toast, Bounce } from "react-toastify";
+import { AuthContext } from "../Context/AuthContext";
+import { ref, push, onValue, getDatabase, set } from "firebase/database";
+import { signOut } from "firebase/auth";
 
 const Login = (props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const authContext = useContext(AuthContext);
+  const database = getDatabase(app);
+
+  const notify = (message) =>
+    toast(message, {
+      position: "top-right",
+      autoClose: 5000,
+      closeOnClick: true,
+      pauseOnHover: true,
+      theme: "dark",
+    });
+
+  useEffect(() => {
+    authContext.cleanLocalStorage();
+    const auth = getAuth();
+    signOut(auth)
+      .then(() => {
+        // Sign-out successful.
+      })
+      .catch((error) => {
+        // An error happened.
+        notify("ERROR LOGOUT");
+      });
+  }, []);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const auth = getAuth(app);
     signInWithEmailAndPassword(auth, email, password)
-      .then(() => {
-        console.log("Logged IN");
-        navigate("/dashboard");
+      .then((userCredentials) => {
+        console.log("Logged IN ", userCredentials.user.uid);
+        const loginRef = ref(database, `userData/${userCredentials.user.uid}`);
+        onValue(loginRef, (snapshot) => {
+          let messagesData = snapshot.val();
+          if (messagesData) {
+            console.log("THE MESSAGES DATA ", messagesData);
+            messagesData = { ...messagesData };
+            messagesData.uid = userCredentials.user.uid;
+            authContext.setUserInformation(messagesData);
+            notify("Logged In Successfully");
+            navigate("/dashboard");
+          } else {
+            console.log("ERROR ");
+            notify("USER DATA NOT FOUND");
+          }
+        });
       })
       .catch((e) => {
+        notify("Error " + e.message);
         console.log("ERROR");
       });
   };

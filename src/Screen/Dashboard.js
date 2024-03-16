@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import Questions from "./Questions";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -10,6 +10,9 @@ import { useNavigate } from "react-router-dom";
 import backgroundImage from "../bg4.jpeg";
 import mainDashboardImage from "../bg3.jpeg";
 import { useState } from "react";
+import { AuthContext } from "../Context/AuthContext";
+import { ref, push, onValue, getDatabase, set } from "firebase/database";
+import { app } from "../firebase";
 
 const Dashboard = (props) => {
   const navigate = useNavigate();
@@ -19,21 +22,175 @@ const Dashboard = (props) => {
     "questions",
     "mainDashboard",
   ];
+  const moodData = {
+    anxious: "I am Axious",
+    happy: "I am Happy",
+    sad: "I am Sad",
+    angry: "I an Angry",
+  };
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
   const [currentScreen, setCurrentScreen] = useState(flowRoute[0]);
+  const [localDataState, setLocalDataState] = useState(null);
+  const [websiteData, setWebsiteData] = useState(null);
+  const [expertList, setExpertList] = useState(null);
+  const [backgroundImageState, setBackgroundImageState] =
+    useState(backgroundImage);
+  const authContext = useContext(AuthContext);
+  const database = getDatabase(app);
+  const [suggestedVideos, setSuggestedVideos] = useState([]);
+  const [questionsSelectedState, setQuestionsSelectedState] = useState(null);
+
+  const getSuggestedVideosList = () => {
+    if (questionsSelectedState != null) {
+      questionsSelectedState.map((questi) => {
+        if (questi.isSelected) {
+          setSuggestedVideos((prevSuggestedVideos) => [
+            ...prevSuggestedVideos,
+            ...questi.category,
+          ]);
+        }
+      });
+    } else {
+      return;
+    }
+  };
+
+  useEffect(() => {
+    console.log("The suggested Videos ", suggestedVideos);
+    const loca = authContext.getWebsiteState();
+    if (loca.questionsSelected.length === 0) {
+      authContext.setQuestionsList(suggestedVideos);
+    } else {
+      // setSuggestedVideos(loca.questionsSelected);
+    }
+  }, [suggestedVideos]);
+
   const handleSubmit = () => {
+    getSuggestedVideosList();
     const nextIndex = currentScreenIndex + 1;
     setCurrentScreenIndex(nextIndex);
     setCurrentScreen(flowRoute[nextIndex]);
   };
-  const [backgroundImageState, setBackgroundImageState] =
-    useState(backgroundImage);
 
   useEffect(() => {
     if (currentScreen == "mainDashboard") {
       setBackgroundImageState(mainDashboardImage);
     }
+    if (currentScreen === "mainDashboard") {
+      setWebsiteData(authContext.getWebsiteState());
+    }
   }, [currentScreen]);
+
+  useEffect(() => {
+    const expertLogsRef = ref(database, `expertlogs`);
+    onValue(
+      expertLogsRef,
+      (snapshot) => {
+        console.log("The Expert Logs ", snapshot.val());
+        const list = snapshot.val();
+        if (list) {
+          const finalList = [];
+          Object.values(list).map((value) => {
+            finalList.push(value);
+          });
+          console.log("The final List ", finalList);
+          setExpertList(finalList);
+        }
+      },
+      []
+    );
+  }, []);
+
+  useEffect(() => {
+    console.log("DATA " + authContext.getWebsiteState());
+    const localData = authContext.getWebsiteState();
+    setLocalDataState(localData);
+    console.log("THE LOCAL DATA ", localData.moodTracker);
+    if (
+      localData.moodTracker !== "" &&
+      localData.questionsSelected.length >= 0
+    ) {
+      setCurrentScreen(flowRoute[3]);
+    }
+  }, []);
+
+  function generateRandomAlphaNumeric(length) {
+    const charset =
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    let result = "";
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * charset.length);
+      result += charset.charAt(randomIndex);
+    }
+    return result;
+  }
+
+  const sendWhatsappMessage = (
+    expertName,
+    phoneNumber,
+    userName,
+    userAge,
+    userGender
+  ) => {
+    fetch(
+      "https://api.twilio.com/2010-04-01/Accounts/ACca983c05457a37a8c37a50e716c1c37c/Messages.json",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+          Authorization:
+            "Basic " +
+            btoa(
+              "ACca983c05457a37a8c37a50e716c1c37c:ea2d3ccf51346237fe1c4d49fc099680"
+            ),
+        },
+        body: new URLSearchParams({
+          To: "whatsapp:+918438078754",
+          From: "whatsapp:+14155238886",
+          Body:
+            "Hi " +
+            expertName +
+            "! You have a message from " +
+            userName +
+            " on Gastrointestinal Wellness Center\n\nUSER DETAILS\nAge: " +
+            userAge +
+            "\nGender:" +
+            userGender,
+        }),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => console.log(data))
+      .catch((error) => console.error("Error:", error));
+  };
+
+  const handleChat = (expert) => {
+    console.log("THE EXPERT DETAILS ", expert);
+    const username = localDataState.userData.name;
+    const roomId = generateRandomAlphaNumeric(10);
+    const expertChatLogsRef = ref(database, `expertlogs/${expert.name}/chats`);
+    const chatUserData = {
+      expertRequested: expert.name,
+      requestedUsername: username,
+      roomId,
+      userAge: localDataState.userData.age,
+      userGender: localDataState.userData.gender,
+    };
+    push(expertChatLogsRef, chatUserData);
+    navigate(`/chat/${username}/${roomId}/${expert.name}`);
+    sendWhatsappMessage(
+      expert.name,
+      expert.phone,
+      username,
+      localDataState.userData.age,
+      localDataState.userData.gender
+    );
+  };
+
+  const handleQuestionsChange = (questions) => {
+    console.log("THE OARENT ", questions);
+    setQuestionsSelectedState(questions);
+  };
   return (
     <div
       className="dashboard-main-container"
@@ -55,22 +212,49 @@ const Dashboard = (props) => {
               <div className="form-heading-text">
                 1. What is your Mood Now ?
               </div>
+              <div style={{ textAlign: "center" }}>
+                Please click on the Emoji according to your current mood
+              </div>
               <div className="mood-tracker-feeling-container">
-                <div className="mood-img-container">
+                <div
+                  className="mood-img-container"
+                  onClick={() => {
+                    handleSubmit();
+                    authContext.setMoodTracker("happy");
+                  }}
+                >
                   <img src="./happy.png"></img>
                   Happy
                 </div>
-                <div className="mood-img-container">
+                <div
+                  className="mood-img-container"
+                  onClick={() => {
+                    handleSubmit();
+                    authContext.setMoodTracker("sad");
+                  }}
+                >
                   <img src="./sad.png"></img>
                   Sad
                 </div>
-                <div className="mood-img-container">
+                <div
+                  className="mood-img-container"
+                  onClick={() => {
+                    handleSubmit();
+                    authContext.setMoodTracker("angry");
+                  }}
+                >
                   <img src="./angry.png"></img>
                   Angry
                 </div>
-                <div className="mood-img-container">
+                <div
+                  className="mood-img-container"
+                  onClick={() => {
+                    handleSubmit();
+                    authContext.setMoodTracker("anxious");
+                  }}
+                >
                   <img src="./anxious.png"></img>
-                  Angry
+                  Anxious
                 </div>
               </div>
             </div>
@@ -78,170 +262,187 @@ const Dashboard = (props) => {
           {currentScreen === "questions" && (
             <div className="question-main-container">
               <div className="form-heading-text">2. Check the boxes!</div>
-              <Questions></Questions>
+              <Questions updateQuestions={handleQuestionsChange}></Questions>
             </div>
           )}
-          <div className="homeButton" type="submit" onClick={handleSubmit}>
-            NEXT
-          </div>
+          {currentScreen !== "moodTracker" && (
+            <div className="homeButton" type="submit" onClick={handleSubmit}>
+              NEXT
+            </div>
+          )}
         </div>
       )}
       {currentScreen === "mainDashboard" && (
         <div className="main-dashboard-layout">
-          <div className="main-dashboard-container">
-            <div className="email-intro">Hello, madhu@gmail.com</div>
-            <div className="analysis-report">
-              Analysis Report Captured at: <strong>1.45PM</strong>
-            </div>
-            <div style={{ marginBottom: "20px", fontStyle: "italic" }}>
-              Note: Next Analysis Report to be captured after 8 hours
-            </div>
-            <div className="mood-card-dash">
-              <div className="mood-img-container">
-                <img src="./sad.png"></img>
-                Sad
+          {websiteData && (
+            <div className="main-dashboard-container">
+              <div className="email-intro">
+                Hello, {websiteData.userData.name}
               </div>
-              <div className="mood-desc">
-                Feeling sad can indeed be difficult, as it encompasses a range
-                of emotions that can weigh heavily on one's mind and spirit. It
-                may stem from various sources, such as personal challenges,
-                setbacks, or even just a general sense of melancholy. Sharing
-                these feelings can be a vital step toward finding relief and
-                support.
+              <div className="analysis-report">
+                Analysis Report Captured at:
+                <strong>{authContext.getDateFormat(websiteData.date)}</strong>
+              </div>
+              <div>{authContext.timeRemaining()}</div>
+              <div style={{ marginBottom: "20px", fontStyle: "italic" }}>
+                Note: Next Analysis Report to be captured after 8 hours
+              </div>
+              <div className="mood-card-dash">
+                <div className="mood-img-container">
+                  <img src={authContext.getMood().image}></img>
+                  <div style={{ color: "#513d87", fontWeight: "600" }}>
+                    {authContext.getMood().mood}
+                  </div>
+                </div>
+                <div className="mood-desc">
+                  {moodData[websiteData.moodTracker]}
+                </div>
+              </div>
+              <div>
+                <div className="video-suggessions">
+                  Explore personalized videos tailored to your problems.
+                </div>
+                {suggestedVideos && (
+                  <div
+                    style={{ display: "flex", gap: "15px", overflow: "scroll" }}
+                  >
+                    {suggestedVideos.map((video) => {
+                      return (
+                        <div>
+                          <iframe
+                            width="200"
+                            height="200"
+                            src={video.link}
+                          ></iframe>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
               </div>
             </div>
-            <div>
-              <div className="video-suggessions">
-                Explore personalized videos tailored to your problems.
+          )}
+          {localDataState && (
+            <div className="main-dashboard-container">
+              <div className="analysis-report">
+                Want to chat with our Experts?
               </div>
-              <div style={{ display: "flex", gap: "15px" }}>
-                <Card sx={{ maxWidth: 345 }}>
+              <div style={{ marginBottom: "20px" }}>Online Experts</div>
+              {expertList ? (
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "20px",
+                    flexWrap: "wrap",
+                    justifyContent: "center",
+                  }}
+                >
+                  {expertList.map((expert) => {
+                    return (
+                      <Card sx={{ maxWidth: 200, borderRadius: 2 }}>
+                        <CardMedia
+                          sx={{ height: 180 }}
+                          image="/cn.jpeg"
+                          title="green iguana"
+                        />
+                        <CardContent>
+                          <Typography gutterBottom variant="h5" component="div">
+                            Dr {expert.name}
+                          </Typography>
+                          <Typography variant="body2" color="text.secondary">
+                            Expert in Mental Wellness
+                          </Typography>
+                          <div
+                            className="expert-details"
+                            color="text.secondary"
+                          >
+                            Gender: {expert.gender}
+                          </div>
+                          <div
+                            className="expert-details"
+                            color="text.secondary"
+                          >
+                            Age: {expert.age}
+                          </div>
+                        </CardContent>
+                        <CardActions>
+                          <Button
+                            size="small"
+                            onClick={() => {
+                              // navigate("/chat/madhu/300/smita");
+                              handleChat(expert);
+                            }}
+                          >
+                            Chat With {expert.name}
+                          </Button>
+                        </CardActions>
+                      </Card>
+                    );
+                  })}
+
+                  {/* 
+                <Card sx={{ maxWidth: 200 }}>
                   <CardMedia
-                    component="iframe"
-                    height="140"
-                    image={`https://youtu.be/hJbRpHZr_d0?si=7_MVFUSNHe_0CF2u`}
-                    title="Yoga for Anxiety and Stress"
+                    sx={{ height: 100 }}
+                    image="/expert.jpeg"
+                    title="green iguana"
                   />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                      "Yoga for Anxiety and Stress"
+                      Dr Nethra
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      "Practise your Yoga Sessions Here"
+                      Expert in Mental Wellness
                     </Typography>
                   </CardContent>
-                </Card>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        handleChat("Nethra");
+                      }}
+                    >
+                      Chat With Nethra
+                    </Button>
+                  </CardActions>
+                </Card> */}
 
-                <Card sx={{ maxWidth: 345 }}>
+                  {/* <Card sx={{ maxWidth: 200 }}>
                   <CardMedia
-                    component="iframe"
-                    height="140"
-                    image={`https://youtu.be/hJbRpHZr_d0?si=7_MVFUSNHe_0CF2u`}
-                    title="10 minute super deep Meditaion Music"
+                    sx={{ height: 100 }}
+                    image="/counselor.jpeg"
+                    title="green iguana"
                   />
                   <CardContent>
                     <Typography gutterBottom variant="h5" component="div">
-                      "10 minute super deep Meditaion Music"
+                      Dr Shrithi
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
-                      "Enjoy free 10 minutes music"
+                      Expert in Mental Wellness
                     </Typography>
                   </CardContent>
-                </Card>
+                  <CardActions>
+                    <Button
+                      size="small"
+                      onClick={() => {
+                        handleChat("Shruthi");
+                      }}
+                    >
+                      Chat With Shruthi
+                    </Button>
+                  </CardActions>
+                </Card> */}
+                </div>
+              ) : (
+                <div>Loading Available Experts....</div>
+              )}
+
+              <div>
+                <div></div>
+                <div></div>
               </div>
             </div>
-          </div>
-          <div className="main-dashboard-container">
-            <div className="analysis-report">
-              Want to chat with our Experts?
-            </div>
-            <div style={{ marginBottom: "20px" }}>Online Experts</div>
-            <div
-              style={{
-                display: "flex",
-                gap: "20px",
-                flexWrap: "wrap",
-                justifyContent: "center",
-              }}
-            >
-              <Card sx={{ maxWidth: 200, borderRadius: 2 }}>
-                <CardMedia
-                  sx={{ height: 100 }}
-                  image="/counselor.jpeg"
-                  title="green iguana"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Dr Smita
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Expert in Mental Wellness
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    onClick={() => navigate("/chat/madhu/300/smita")}
-                  >
-                    Chat With Smita
-                  </Button>
-                </CardActions>
-              </Card>
-
-              <Card sx={{ maxWidth: 200 }}>
-                <CardMedia
-                  sx={{ height: 100 }}
-                  image="/expert.jpeg"
-                  title="green iguana"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Dr Nethra
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Expert in Mental Wellness
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    onClick={() => navigate("/chat/madhu/300/smita")}
-                  >
-                    Chat With Nethra
-                  </Button>
-                </CardActions>
-              </Card>
-
-              <Card sx={{ maxWidth: 200 }}>
-                <CardMedia
-                  sx={{ height: 100 }}
-                  image="/counselor.jpeg"
-                  title="green iguana"
-                />
-                <CardContent>
-                  <Typography gutterBottom variant="h5" component="div">
-                    Dr Shrithi
-                  </Typography>
-                  <Typography variant="body2" color="text.secondary">
-                    Expert in Mental Wellness
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    size="small"
-                    onClick={() => navigate("/chat/madhu/300/smita")}
-                  >
-                    Chat With Shrithi
-                  </Button>
-                </CardActions>
-              </Card>
-            </div>
-
-            <div>
-              <div></div>
-              <div></div>
-            </div>
-          </div>
+          )}
         </div>
       )}
     </div>
