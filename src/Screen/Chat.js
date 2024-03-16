@@ -84,19 +84,6 @@ const Chat = (props) => {
           </div>
         </form>
       </div>
-
-      <footer>
-        <div
-          style={{ cursor: "pointer" }}
-          onClick={() => {
-            window.open(
-              "http://localhost:3000/chatfile/" + expertName + "/" + roomId
-            );
-          }}
-        >
-          Open Expert Chat Page
-        </div>
-      </footer>
     </div>
   );
 };

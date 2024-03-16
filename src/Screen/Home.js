@@ -25,7 +25,7 @@ const Home = (props) => {
                 }}
                 className="homeButton"
               >
-                Get Started
+                User Login
               </div>
               <div
                 onClick={() => {

@@ -80,7 +80,7 @@ export const AuthProvider = ({ children }) => {
 
   const setQuestionsList = (list) => {
     const localWebsiteData = JSON.parse(localStorage.getItem(websiteDataKey));
-    localWebsiteData.date = new Date();
+    // localWebsiteData.date = new Date();
     localWebsiteData.questionsSelected = list;
 
     localStorage.setItem(websiteDataKey, JSON.stringify(localWebsiteData));

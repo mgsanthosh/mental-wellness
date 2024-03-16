@@ -87,7 +87,7 @@ const ChatFile = () => {
       <div className="chat-screen-container">
         {messages.map((message, index) => (
           <div key={index}>
-            {message.username === username ? (
+            {message.username !== username ? (
               <div className="selfTextContainer">
                 <div className="selfChatBubbleContainer">
                   <div className="selfMessageContainer">{message.text}</div>
