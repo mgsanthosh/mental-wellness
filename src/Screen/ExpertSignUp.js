@@ -2,10 +2,11 @@ import React, { useState } from "react";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
 import { app } from "../firebase";
-import { Button, TextField } from "@mui/material";
+import { Button, TextField, MenuItem } from "@mui/material";
 import backgroundImage from "../bg.jpeg";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import { ref, push, onValue, getDatabase, set } from "firebase/database";
+import Loader from "./Loader";
 
 const ExpertSignUp = (props) => {
   const [email, setEmail] = useState("");
@@ -106,13 +107,25 @@ const ExpertSignUp = (props) => {
           />
         </div>
         <div style={{ display: "flex", gap: "20px" }}>
-          <TextField
+          {/* <TextField
             type="gender"
             value={gender}
             onChange={(e) => setGender(e.target.value)}
             placeholder="Enter Gender"
             label="Gender"
-          />
+          /> */}
+          <TextField
+            select
+            value={gender}
+            onChange={(e) => setGender(e.target.value)}
+            label="Gender"
+            fullWidth
+          >
+            {/* Menu items for the dropdown */}
+            <MenuItem value="Male">Male</MenuItem>
+            <MenuItem value="Female">Female</MenuItem>
+            <MenuItem value="Other">Other</MenuItem>
+          </TextField>
           <TextField
             type="age"
             value={age}
@@ -134,6 +147,7 @@ const ExpertSignUp = (props) => {
           Already have an account? Login
         </div>
       </div>
+      {loader && <Loader message={loaderMessage}></Loader>}
     </div>
   );
 };
