@@ -6,6 +6,7 @@ import { Button, TextField } from "@mui/material";
 import backgroundImage from "../bg.jpeg";
 import { ToastContainer, toast, Bounce } from "react-toastify";
 import { ref, push, onValue, getDatabase, set } from "firebase/database";
+import Loader from "./Loader";
 
 const SignUp = (props) => {
   const [email, setEmail] = useState("");
@@ -16,6 +17,9 @@ const SignUp = (props) => {
   const [age, setAge] = useState("");
   const navigate = useNavigate();
   const database = getDatabase(app);
+  const [loaderMessage, setLoaderMessage] = useState("");
+  const [loader, setLoader] = useState(false);
+
   const notify = (message) =>
     toast(message, {
       position: "top-right",
@@ -28,8 +32,12 @@ const SignUp = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const auth = getAuth(app);
+    setLoader(true);
+    setLoaderMessage("Signing Up ...");
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredentials) => {
+        setLoaderMessage("Storing User Data ...");
+
         console.log("User created successfully", userCredentials.user.uid);
         const signUpRef = ref(database, `userData/${userCredentials.user.uid}`);
         console.log("The signup ref ", signUpRef);
@@ -121,6 +129,7 @@ const SignUp = (props) => {
           Already have an account? Login
         </div>
       </div>
+      {loader && <Loader message={loaderMessage}></Loader>}
     </div>
   );
 };

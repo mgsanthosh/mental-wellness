@@ -8,6 +8,7 @@ import { ToastContainer, toast, Bounce } from "react-toastify";
 import { AuthContext } from "../Context/AuthContext";
 import { ref, push, onValue, getDatabase, set } from "firebase/database";
 import { signOut } from "firebase/auth";
+import Loader from "./Loader";
 
 const ExpertLogin = (props) => {
   const [email, setEmail] = useState("");
@@ -15,6 +16,8 @@ const ExpertLogin = (props) => {
   const navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const database = getDatabase(app);
+  const [loaderMessage, setLoaderMessage] = useState("");
+  const [loader, setLoader] = useState(false);
 
   const notify = (message) =>
     toast(message, {
@@ -41,10 +44,13 @@ const ExpertLogin = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const auth = getAuth(app);
+    setLoader(true);
+    setLoaderMessage("Logging In...");
     signInWithEmailAndPassword(auth, email, password)
       .then((userCredentials) => {
         console.log("Logged IN ", userCredentials.user.uid);
         const loginRef = ref(database, `userData/${userCredentials.user.uid}`);
+        setLoaderMessage("Fetching User Details...");
         onValue(loginRef, (snapshot) => {
           let messagesData = snapshot.val();
           if (messagesData) {
@@ -53,16 +59,19 @@ const ExpertLogin = (props) => {
             messagesData.uid = userCredentials.user.uid;
             authContext.setUserInformation(messagesData);
             notify("Logged In Successfully");
+            setLoader(false);
             navigate("/expert-chat-list");
           } else {
             console.log("ERROR ");
             notify("USER DATA NOT FOUND");
+            setLoader(false);
           }
         });
       })
       .catch((e) => {
         notify("Error " + e.message);
         console.log("ERROR");
+        setLoader(false);
       });
   };
   return (
@@ -101,6 +110,7 @@ const ExpertLogin = (props) => {
           New User? Sign Up
         </div>
       </div>
+      {loader && <Loader message={loaderMessage}></Loader>}
     </div>
   );
 };

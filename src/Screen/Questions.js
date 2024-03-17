@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const Questions = ({ updateQuestions }) => {
   const [responses, setResponses] = useState({});
 
-  const questions = [
+  const [questionsList, setQuestionList] = useState([
     {
       question:
         "Is there any change in your sleep pattern, appetite, or energy level?",
@@ -29,15 +29,12 @@ const Questions = ({ updateQuestions }) => {
       type: "Yes/No",
       category: [
         {
-          link: "https://youtu.be/iqcAWup2aCE?si=QKfVBHVUkfv2VKl_",
+          link: "https://www.youtube.com/embed/iqcAWup2aCE",
           title: "Yoga To Treat Anxiety",
         },
+
         {
-          link: "https://www.youtube.com/live/CxV_raDgoWo?si=kiHsmpwmED4iE52T",
-          title: "Relaxing Music",
-        },
-        {
-          link: "https://youtu.be/lHVYgnlukTw?si=ManDO3p5or7f68jY",
+          link: "https://www.youtube.com/embed/lHVYgnlukTw",
           title: " 5 Ways to Deal with Anxiety ",
         },
       ],
@@ -130,13 +127,10 @@ const Questions = ({ updateQuestions }) => {
         },
       ],
     },
-  ];
-  const category = {
-    "": "",
-  };
+  ]);
 
-  const handleCheckboxChange = (question, isChecked, index) => {
-    // console.log("The Question ", question);
+  const handleCheckboxChange = (question, isChecked, index, questions) => {
+    console.log("The Question ", question);
     setResponses((prevResponses) => ({
       ...prevResponses,
       [question.question]: isChecked,
@@ -154,13 +148,16 @@ const Questions = ({ updateQuestions }) => {
       questions[index]["isSelected"] = false;
     }
     console.log("The QUESTIONS ", questions);
-    updateQuestions(questions);
+    // Update the state
+    setQuestionList([...questions]);
+    // Pass the updated questions list to the parent component
+    updateQuestions([...questions]);
   };
   return (
     <div>
       <h2>Questionnaire</h2>
       <form>
-        {questions.map((q, index) => (
+        {questionsList.map((q, index) => (
           <div key={q.question} style={{ margin: "20px" }}>
             <label
               style={{
@@ -174,7 +171,12 @@ const Questions = ({ updateQuestions }) => {
                 type="checkbox"
                 checked={responses[q.question] || false}
                 onChange={(e) =>
-                  handleCheckboxChange(q, e.target.checked, index)
+                  handleCheckboxChange(
+                    q,
+                    e.target.checked,
+                    index,
+                    questionsList
+                  )
                 }
               />
               {q.question}

@@ -44,6 +44,7 @@ const Dashboard = (props) => {
     if (questionsSelectedState != null) {
       questionsSelectedState.map((questi) => {
         if (questi.isSelected) {
+          console.log("THE QUESTO ", questi);
           setSuggestedVideos((prevSuggestedVideos) => [
             ...prevSuggestedVideos,
             ...questi.category,
@@ -64,6 +65,13 @@ const Dashboard = (props) => {
       // setSuggestedVideos(loca.questionsSelected);
     }
   }, [suggestedVideos]);
+
+  useEffect(() => {
+    const loca = authContext.getWebsiteState();
+    if (loca.questionsSelected.length > 0) {
+      setSuggestedVideos(loca.questionsSelected);
+    }
+  }, []);
 
   const handleSubmit = () => {
     getSuggestedVideosList();
@@ -110,7 +118,12 @@ const Dashboard = (props) => {
       localData.moodTracker !== "" &&
       localData.questionsSelected.length >= 0
     ) {
-      setCurrentScreen(flowRoute[3]);
+      console.log("THE 8 HR Valdiatipon ", authContext.isEightHoursPassed());
+      if (authContext.isEightHoursPassed()) {
+        setCurrentScreen(flowRoute[0]);
+      } else {
+        setCurrentScreen(flowRoute[3]);
+      }
     }
   }, []);
 
@@ -281,7 +294,9 @@ const Dashboard = (props) => {
               </div>
               <div className="analysis-report">
                 Analysis Report Captured at:
-                <strong>{authContext.getDateFormat(websiteData.date)}</strong>
+                <strong>
+                  {authContext.getDateFormat(localDataState.date)}
+                </strong>
               </div>
               <div>{authContext.timeRemaining()}</div>
               <div style={{ marginBottom: "20px", fontStyle: "italic" }}>
@@ -306,9 +321,9 @@ const Dashboard = (props) => {
                   <div
                     style={{ display: "flex", gap: "15px", overflow: "scroll" }}
                   >
-                    {suggestedVideos.map((video) => {
+                    {suggestedVideos.map((video, index) => {
                       return (
-                        <div>
+                        <div key={index}>
                           <iframe
                             width="200"
                             height="200"
@@ -337,9 +352,9 @@ const Dashboard = (props) => {
                     justifyContent: "center",
                   }}
                 >
-                  {expertList.map((expert) => {
+                  {expertList.map((expert, index) => {
                     return (
-                      <Card sx={{ maxWidth: 200, borderRadius: 2 }}>
+                      <Card sx={{ maxWidth: 200, borderRadius: 2 }} key={index}>
                         <CardMedia
                           sx={{ height: 180 }}
                           image="/cn.jpeg"

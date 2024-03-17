@@ -5,6 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
+  const NUMBER_HOURS_FOR_REFRESH = 8;
 
   const websiteState = {
     moodTracker: "",
@@ -20,12 +21,24 @@ export const AuthProvider = ({ children }) => {
   };
 
   function isEightHoursPassed() {
-    const earlierTimestamp = new Date(websiteState.date).getTime(); // Replace this with your earlier recorded time
+    const localdata = JSON.parse(localStorage.getItem(websiteDataKey));
+    console.log("THE LOCALA DATE ", localdata.date);
+    const earlierTimestamp = new Date(localdata.date).getTime(); // Replace this with your earlier recorded time
     const currentTimestamp = new Date().getTime();
-    const eightHoursInMilliseconds = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
-    const timeDifference = currentTimestamp - earlierTimestamp;
+    const eightHoursInMilliseconds = NUMBER_HOURS_FOR_REFRESH * 60 * 60 * 1000; // 8 hours in milliseconds
 
-    return timeDifference >= eightHoursInMilliseconds;
+    const timeDifference =
+      eightHoursInMilliseconds - (currentTimestamp - earlierTimestamp);
+
+    if (timeDifference <= 0) {
+      return true;
+    } else {
+      const hours = Math.floor(timeDifference / (60 * 60 * 1000));
+      const minutes = Math.ceil(
+        (timeDifference % (60 * 60 * 1000)) / (60 * 1000)
+      );
+      return false;
+    }
   }
 
   const timeRemaining = () => {
@@ -33,7 +46,7 @@ export const AuthProvider = ({ children }) => {
     console.log("THE LOCALA DATE ", localdata.date);
     const earlierTimestamp = new Date(localdata.date).getTime(); // Replace this with your earlier recorded time
     const currentTimestamp = new Date().getTime();
-    const eightHoursInMilliseconds = 8 * 60 * 60 * 1000; // 8 hours in milliseconds
+    const eightHoursInMilliseconds = NUMBER_HOURS_FOR_REFRESH * 60 * 60 * 1000; // 8 hours in milliseconds
 
     const timeDifference =
       eightHoursInMilliseconds - (currentTimestamp - earlierTimestamp);
@@ -49,8 +62,8 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const getDateFormat = () => {
-    const date = new Date();
+  const getDateFormat = (currDate) => {
+    const date = new Date(currDate);
 
     const day = date.getDate().toString().padStart(2, "0");
     const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Note: Month starts from 0

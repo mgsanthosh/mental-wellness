@@ -407,3 +407,29 @@
   font-weight: 700;
   font-size: 25px;
 }
+
+.chat-bubble-container {
+  overflow: scroll;
+}
+
+.loader-container {
+  width: 100%;
+  position: absolute;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  width: "100%";
+  backdrop-filter: blur(10px);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.loader-text {
+  font-weight: 700;
+  margin-top: 20px;
+  background-color: #fff;
+  padding: 10px 20px;
+  text-align: center;
+  color: #fc8354;
+  border-radius: 12px;
+}

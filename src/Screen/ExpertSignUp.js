@@ -16,6 +16,8 @@ const ExpertSignUp = (props) => {
   const [age, setAge] = useState("");
   const navigate = useNavigate();
   const database = getDatabase(app);
+  const [loaderMessage, setLoaderMessage] = useState("");
+  const [loader, setLoader] = useState(false);
   const notify = (message) =>
     toast(message, {
       position: "top-right",
@@ -28,8 +30,12 @@ const ExpertSignUp = (props) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const auth = getAuth(app);
+    setLoader(true);
+    setLoaderMessage("Signing Up Counsellor...");
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredentials) => {
+        setLoader(false);
+        setLoaderMessage("Storing Counsellor Details...");
         console.log("User created successfully", userCredentials.user.uid);
         const signUpRef = ref(database, `userData/${userCredentials.user.uid}`);
         console.log("The signup ref ", signUpRef);
@@ -50,6 +56,8 @@ const ExpertSignUp = (props) => {
         navigate("/expert-login");
       })
       .catch((error) => {
+        setLoader(false);
+
         notify("ERROR " + error.message);
         const errorCode = error.code;
         const errorMessage = error.message;
