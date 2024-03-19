@@ -23,10 +23,10 @@ const Dashboard = (props) => {
     "mainDashboard",
   ];
   const moodData = {
-    anxious: "I am Axious",
-    happy: "I am Happy",
-    sad: "I am Sad",
-    angry: "I an Angry",
+    anxious: "It is overwhelming to navigate GI problems and anxiety, but having support is consoling. Knowing you're not alone in the struggles you face gives you hope. Healing becomes an enjoyable journey with others when supported and resilient.",
+    happy: "Happiness a state of joy, contentment, or satisfaction. It indicates that the individual is experiencing positive emotions and is generally pleased with their current circumstances or outlook on life. ",
+    sad: "I am I'm depressed because of gastrointestinal and psychological problems. I can't quite put my finger on it, but they're both wearing me down. I'm looking for help to get by. Your comprehension is greatly appreciated.",
+    angry: "My anger arises from both gastrointestinal and mental health struggles, a complex battle. Juggling physical discomfort and psychological strain, I seek understanding and support in navigating this challenge.",
   };
   const [currentScreenIndex, setCurrentScreenIndex] = useState(0);
   const [currentScreen, setCurrentScreen] = useState(flowRoute[0]);

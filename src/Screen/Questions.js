@@ -45,11 +45,11 @@ const Questions = ({ updateQuestions }) => {
       type: "Yes/No",
       category: [
         {
-          link: "https://youtu.be/EUhQ8h9IzF8?si=sILq7B0R3GSFG55A",
+          link: "https://www.youtube.com/embed/EUhQ8h9IzF8?si=g5zOITl5MTgOMAZK",
           title: "How To Cope With Panic Attacks",
         },
         {
-          link: "https://youtu.be/wR8oKZ5qTfk?si=uKeZyg59vuqXHb4k",
+          link: "https://www.youtube.com/embed/wR8oKZ5qTfk?si=AM0n3xOdQ8zv1qk1",
           title: "How to Stop Panic Attacks Part",
         },
       ],
@@ -59,15 +59,15 @@ const Questions = ({ updateQuestions }) => {
       type: "Yes/No",
       category: [
         {
-          link: "https://youtu.be/NE56XyroZY4?si=9IJsF_yTQsMOKncF",
+          link: "https://www.youtube.com/embed/NE56XyroZY4?si=EUQnjHCa_hKimAqt",
           title: "Ease the Head Pain",
         },
         {
-          link: "https://youtu.be/K2LnW1gF6Eg?si=EDXh_aOovQzsiMaw",
+          link: "https://www.youtube.com/embed/K2LnW1gF6Eg?si=fH2aY4G_AcCSa05j",
           title: "Yoga for Mood Swings",
         },
         {
-          link: "https://youtu.be/6mZP1GORRC8?si=rh-RSLmWG3qagks2",
+          link: "https://www.youtube.com/embed/6mZP1GORRC8?si=aqguQUTFrc5xC1F2",
           title: "Ways to Prevent Frequent Mood Fluctuations ",
         },
       ],
@@ -77,15 +77,15 @@ const Questions = ({ updateQuestions }) => {
       type: "Yes/No",
       category: [
         {
-          link: "https://youtu.be/MjMkBaqimFo?si=A1qTPquH9urZN0iB",
+          link: "https://www.youtube.com/embed/MjMkBaqimFo?si=kAB-E9OfQ88yVbd1",
           title: "Emotional Benefits of Exercise ",
         },
         {
-          link: "https://youtu.be/Sxddnugwu-8?si=a2L2N37tVW06fu--",
+          link: "https://www.youtube.com/embed/Sxddnugwu-8?si=JGw81RtWTZEZdg2f",
           title: "Yoga For Depression ",
         },
         {
-          link: "https://youtu.be/sFtP0HWvu0k?si=z5u8jrvWft6SJxrZ",
+          link: "https://www.youtube.com/embed/sFtP0HWvu0k?si=K7DmV_c2y4WYPwdW",
           title: "Exercise for Depression",
         },
       ],
@@ -96,15 +96,15 @@ const Questions = ({ updateQuestions }) => {
       type: "Yes/No",
       category: [
         {
-          link: "https://youtu.be/3u5zpVnMLkw?si=DvW92DD569fsiUSy",
+          link: "https://www.youtube.com/embed/3u5zpVnMLkw?si=SYUf3uTRCaZ1Eiej",
           title: " Headache Relief ",
         },
         {
-          link: "https://youtu.be/9RavVoZ5MAw?si=S7trmAS3AG8K96yt",
+          link: "https://www.youtube.com/embed/9RavVoZ5MAw?si=R5PN19eNNPsosDM6",
           title: "10 Minute Headache relief music ",
         },
         {
-          link: "https://youtu.be/8-qIoavXiOA?si=o9K1soVh6PucZpyi",
+          link: "https://www.youtube.com/embed/8-qIoavXiOA?si=V515q87-t-kdjHz1",
           title: "Anxiety Headache Relief",
         },
       ],
@@ -114,15 +114,15 @@ const Questions = ({ updateQuestions }) => {
       type: "Yes/No",
       category: [
         {
-          link: "https://youtu.be/sm0i1Y4g_zA?si=mRDU16pMO6xwViwQ",
+          link: "https://www.youtube.com/embed/sm0i1Y4g_zA?si=Qpuuv_Fn62XZCfHU",
           title: "How To Be Calm and Peaceful Within ",
         },
         {
-          link: "https://youtu.be/nlEoLYREbXo?si=dM4yWJP1r0zZOkQi",
+          link: "https://www.youtube.com/embed/nlEoLYREbXo?si=KXzOZL8f-08x3_A5",
           title: "Clear Your Mind, 5 Minute Meditation ",
         },
         {
-          link: "https://youtu.be/AYoeex2ReXQ?si=tE78UPCwmk-NNkad",
+          link: "https://www.youtube.com/embed/AYoeex2ReXQ?si=-IJTZIdvGV7akSE0",
           title: "10 Minute Calming Yoga ",
         },
       ],
